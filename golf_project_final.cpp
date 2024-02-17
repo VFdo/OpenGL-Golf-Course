@@ -9,6 +9,7 @@
 #include "golf_cart.hpp"
 #include "grass_field.hpp"
 #include "golf_ball.hpp"
+#include "flag.hpp"
 
 #define GL_SILENCE_DEPRECATION
 
@@ -152,18 +153,6 @@ void drawGrid() {
     glEnd();
 }
 
-//void drawBall(float size, GLfloat ballTextureId) {
-//    glRotatef(90, 1.0, 0.0, 0.0);
-//    GLUquadric* quad = gluNewQuadric();
-//    gluQuadricTexture(quad, GL_TRUE);
-//
-//    glBindTexture(GL_TEXTURE_2D, ballTextureId);
-//                                                                     
-//    gluSphere(quad, 5.0, 32, 32);
-//
-//    gluDeleteQuadric(quad);
-//}
-
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
@@ -179,9 +168,10 @@ void display() {
 //    drawAxes();
 //    drawCart(8);
 //    drawOval(30, 50.0f, 40.0f, grassTextureId);
+//    drawBall(5.0, ballTextureId);
+//    drawFlag();
 //    **********************
         
-    drawBall(5.0, ballTextureId);
     
     
     
