@@ -14,14 +14,18 @@
 
 //#endif /* golf_ball_hpp */
 
-void drawBall(float size, GLfloat ballTextureId) {
+void drawBall(float size) {
+    glPushMatrix();
+    glColor3f(1.0, 1.0, 1.0);
+    glEnable(GL_TEXTURE_2D);
+    
     glRotatef(90, 1.0, 0.0, 0.0);
     GLUquadric* quad = gluNewQuadric();
     gluQuadricTexture(quad, GL_TRUE);
-
-    glBindTexture(GL_TEXTURE_2D, ballTextureId);
-                                                                     
     gluSphere(quad, size, 32, 32);
 
     gluDeleteQuadric(quad);
+
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
 }

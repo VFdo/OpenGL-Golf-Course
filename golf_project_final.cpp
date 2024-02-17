@@ -18,6 +18,8 @@
 #include <GLUT/glut.h>
 #include <math.h>
 #include <SOIL2/SOIL2.h>
+#include <stdio.h>
+#include <iostream>
 
 float sceZ = 0;
 float sceX = 0;
@@ -31,6 +33,7 @@ int animationFactor = 0;
 
 GLfloat grassTextureId;
 GLfloat ballTextureId;
+GLfloat sandTextureId;
 
 
 GLuint textureID;
@@ -60,7 +63,8 @@ void loadTexture() {
 
 void loadGrassTexture(){
     grassTextureId = SOIL_load_OGL_texture(
-        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture.jpg",  // Replace with the path to your texture file
+                                           "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture2.jpeg",
+//        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture.jpg",  // Replace with the path to your texture file
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -81,12 +85,19 @@ void loadBallTexture() {
 
     if (!ballTextureId) {
         printf("Ball texture loading failed: %s\n", SOIL_last_result());
-    } else{
-        glBindTexture(GL_TEXTURE_2D, ballTextureId);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+}
+
+void loadSandTexture(){
+    sandTextureId = SOIL_load_OGL_texture(
+        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/sand_texture.jpg",  // Replace with the path to your texture file
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+    );
+
+    if (!sandTextureId) {
+        printf("Sand texture loading failed: %s\n", SOIL_last_result());
     }
 }
 
@@ -113,11 +124,12 @@ void loadBallTexture() {
 void init() {
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClearDepth(1.0);
-    glEnable(GL_TEXTURE_2D);
+//    glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
 //    loadTexture();
-    loadGrassTexture();
     loadBallTexture();
+    loadSandTexture();
+    loadGrassTexture();
 }
 
 void drawAxes() {
@@ -155,6 +167,10 @@ void drawGrid() {
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
 //    camera orientation (eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
@@ -167,14 +183,43 @@ void display() {
 //    drawGrid();
 //    drawAxes();
 //    drawCart(8);
-//    drawOval(30, 50.0f, 40.0f, grassTextureId);
+//    glPushMatrix();
+    
+//    glPopMatrix();
 //    drawBall(5.0, ballTextureId);
 //    drawFlag();
 //    **********************
         
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, grassTextureId);
+    drawOval(30, 50.0f, 40.0f);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
     
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, sandTextureId);
+    glTranslatef(0.0f, 0.2f, 0.0f);
+    drawOval(50, 10, 5);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
     
+    glPushMatrix();
+    glTranslatef(0.0f, 16.0f, 3.0f);
+    glScalef(5.0f, 5.0f, 5.0f);
+    drawFlag();
+    glPopMatrix();
     
+    glPushMatrix();
+    glTranslatef(0.0f, 5.0f, 0.0f);
+    drawCart(8);
+    glPopMatrix();
+    
+    glPushMatrix();
+    glTranslatef(0.0f, 1.0f, 5.0f);
+    glBindTexture(GL_TEXTURE_2D, ballTextureId);
+    drawBall(1.0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
     
     glColor3f(1.0, 1.0, 1.0);
 
@@ -182,6 +227,7 @@ void display() {
     glPopMatrix();
     glutSwapBuffers();
     animationFactor += 5;
+    
 }
 
 void keyboardSpecial(int key, int x, int y) {
