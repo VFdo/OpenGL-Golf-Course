@@ -13,6 +13,12 @@
 #include <math.h>
 //#endif /* golf_cart_hpp */
 
+GLfloat cartBody[] = {0.4, 0.6, 0.8, 1.0};
+GLfloat cartFloor[] = {0.8, 0.8, 0.8, 1.0};
+GLfloat cartBlack[] = {0.0, 0.0, 0.0, 1.0};
+GLfloat cartTire[] = {0.2, 0.2, 0.2, 1.0};
+GLfloat cartDiffiuse[] = {0.2, 0.2, 0.2, 1.0};
+
 void drawCubeMesh(float cubeSize, int width, int length){
     for (int i = 0; i < length; i++) {
         for (int j = 0; j < width; j++) {
@@ -38,6 +44,11 @@ void drawSeatPlatform(int floorWidth){
     glColor3f(0.8, 0.8, 0.8);
     drawCubeMesh(0.5f, floorWidth, 15);
     
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartBody);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartBody);
+    glMaterialf(GL_FRONT, GL_SHININESS, 50);
+    
     glColor3f(0.4, 0.6, 0.8);
     glTranslatef(0.3f, 0.0f, 0.5f);
     drawCubeMesh(0.5f, floorWidth, 5);
@@ -51,6 +62,10 @@ void drawSeatPlatform(int floorWidth){
     glTranslatef(0.0f, 0.0f, 0.5f);
     drawCubeMesh(0.5f, floorWidth, 5);
     
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartFloor);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartFloor);
+    glMaterialf(GL_FRONT, GL_SHININESS, 50);
 //    seat
     glTranslatef(0.0f, 0.0f, 0.5f);
     glColor3f(0.8, 0.8, 0.8);
@@ -66,6 +81,10 @@ void drawSeatPlatform(int floorWidth){
 }
 
 void drawTire() {
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartBlack);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartBlack);
+    glMaterialf(GL_FRONT, GL_SHININESS, 5);
     GLUquadric* quad = gluNewQuadric();
     gluQuadricTexture(quad, GL_TRUE);
 
@@ -74,6 +93,10 @@ void drawTire() {
     glutSolidTorus(0.7, 2.0, 30, 30);
     
     glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartTire);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartTire);
+    glMaterialf(GL_FRONT, GL_SHININESS, 5);
     glScaled(0.5, 0.5, 0.5);
     glColor3f(0.2, 0.2, 0.2);
     glutSolidTorus(0.7, 2.0, 30, 30);
@@ -83,6 +106,11 @@ void drawTire() {
 }
 
 void addWheels(){
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartBlack);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartBlack);
+    glMaterialf(GL_FRONT, GL_SHININESS, 5);
+    
     glPushMatrix();
     glColor3f(0.0, 0.0, 0.0);
 //    back wheel front-view
@@ -111,6 +139,11 @@ void addWheels(){
 }
 
 void drawCartBackFront(){
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartBody);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartBody);
+    glMaterialf(GL_FRONT, GL_SHININESS, 25);
+    
     glPushMatrix();
     glScaled(1.5, 1.5, 1.5);
     glRotatef(270, 1.0, 0.0, 0.0);
@@ -130,6 +163,11 @@ void drawCartBackFront(){
 }
 
 void drawCartBackRear(){
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartBody);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartBody);
+    glMaterialf(GL_FRONT, GL_SHININESS, 25);
+    
     glPushMatrix();
     glScaled(1.5, 1.5, 1.5);
     glRotatef(270, 1.0, 0.0, 0.0);
@@ -150,6 +188,12 @@ void drawCartBackRear(){
 
 void drawFrontBox(float floorWidth){
     glPushMatrix();
+    
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartBody);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartBody);
+    glMaterialf(GL_FRONT, GL_SHININESS, 20);
+    
     glScaled(1.5, 1.5, 1.5);
     glRotatef(270, 1.0, 0.0, 0.0);
     
@@ -165,6 +209,11 @@ void drawFrontBox(float floorWidth){
     
     glTranslatef(0.0f, 0.0f, 0.5f);
     drawCubeMesh(0.5f, floorWidth, 5);
+    
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartBlack);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartBlack);
+    glMaterialf(GL_FRONT, GL_SHININESS, 30);
     
 //    steering wheel
     glRotatef(-45, 0.0, 1.0, 0.0);
@@ -192,6 +241,11 @@ void drawFrontBox(float floorWidth){
 }
 
 void drawRoof(float floorWidth){
+    glMaterialfv(GL_FRONT, GL_AMBIENT, cartBody);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, cartBody);
+    glMaterialf(GL_FRONT, GL_SHININESS, 30);
+    
     glPushMatrix();
     glScaled(1.5, 1.5, 1.5);
     glRotatef(270, 1.0, 0.0, 0.0);
