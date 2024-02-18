@@ -10,6 +10,7 @@
 #include "grass_field.hpp"
 #include "golf_ball.hpp"
 #include "flag.hpp"
+#include "skybox.hpp"
 
 #define GL_SILENCE_DEPRECATION
 
@@ -30,6 +31,8 @@ float camY = 2;
 float camZ = 5;
 
 int animationFactor = 0;
+
+GLfloat skyBoxSize = 50.f;
 
 GLfloat ballTextureId;
 GLfloat sandTextureId;
@@ -239,16 +242,16 @@ void drawGrid() {
     glEnd();
 }
 
-void drawSquare(float size) {
-    glEnable(GL_TEXTURE_2D);
-    glBegin(GL_POLYGON);
-    glTexCoord2d(1.0, 1.0);glVertex3d(0.0, 0.0, 0.0);
-    glTexCoord2d(0.0, 1.0);glVertex3d(size, 0.0, 0.0);
-    glTexCoord2d(0.0, 0.0);glVertex3d(size, -size, 0.0);
-    glTexCoord2d(1.0, 0.0);glVertex3d(0.0, -size, 0.0);
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
-}
+//void drawSquare(float size) {
+//    glEnable(GL_TEXTURE_2D);
+//    glBegin(GL_POLYGON);
+//    glTexCoord2d(1.0, 1.0);glVertex3d(0.0, 0.0, 0.0);
+//    glTexCoord2d(0.0, 1.0);glVertex3d(size, 0.0, 0.0);
+//    glTexCoord2d(0.0, 0.0);glVertex3d(size, -size, 0.0);
+//    glTexCoord2d(1.0, 0.0);glVertex3d(0.0, -size, 0.0);
+//    glEnd();
+//    glDisable(GL_TEXTURE_2D);
+//}
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -264,26 +267,45 @@ void display() {
     glTranslatef(sceX, sceY, sceZ);
     glRotatef(sceR*5, 0.0, 1.0, 0.0);
     
-//    ****** COMPLETED ******
-//    drawGrid();
-//    drawAxes();
-//    drawCart(8);
+    
+//    ************ SKYBOX ************
+//// front
 //    glPushMatrix();
-    
-//    glPopMatrix();
-//    drawBall(5.0, ballTextureId);
-//    drawFlag();
-//    **********************
-    
-    
-//    TODO: for sky box
-//    glPushMatrix();
-//    glBindTexture(GL_TEXTURE_2D, grassTexture3Id);
-//    glRotatef(90, 0.0, 1.0, 0.0);
-//    glTranslatef(0.0f, -0.1f, 0.0f);
-//    drawOval(50, 100, 80);
+//    glTranslatef(skyBoxSize/2, skyBoxSize, -skyBoxSize/2); // to left half, up full, back full
+//    glRotatef(-180, 0.0, 1.0, 0.0);
+//    glBindTexture(GL_TEXTURE_2D, frontTextureId);
+//    drawSquare(skyBoxSize);
 //    glBindTexture(GL_TEXTURE_2D, 0);
 //    glPopMatrix();
+//
+////    right
+//    glPushMatrix();
+//    glRotatef(-90, 0.0, 1.0, 0.0);
+//    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
+//    glBindTexture(GL_TEXTURE_2D, rightTextureId);
+//    drawSquare(skyBoxSize);
+//    glBindTexture(GL_TEXTURE_2D, 0);
+//    glPopMatrix();
+//
+////    left
+//    glPushMatrix();
+//    glRotatef(90, 0.0, 1.0, 0.0);
+//    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
+//    glBindTexture(GL_TEXTURE_2D, leftTextureId);
+//    drawSquare(skyBoxSize);
+//    glBindTexture(GL_TEXTURE_2D, 0);
+//    glPopMatrix();
+//
+////    back
+//    glPushMatrix();
+////    glRotatef(90, 0.0, 1.0, 0.0);
+//    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2); // to left half, up full, front half
+//    glBindTexture(GL_TEXTURE_2D, backTextureId);
+//    drawSquare(skyBoxSize);
+//    glBindTexture(GL_TEXTURE_2D, 0);
+//    glPopMatrix();
+//
+//    ***********************************
     
 //    dark grass patch 1
     glPushMatrix();
@@ -354,58 +376,7 @@ void display() {
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
     
-    GLfloat skyBoxSize = 50.f;
-    
-    
-    // front
-    glPushMatrix();
-    glTranslatef(skyBoxSize/2, skyBoxSize, -skyBoxSize/2); // to left half, up full, back full
-    glRotatef(-180, 0.0, 1.0, 0.0);
-    glBindTexture(GL_TEXTURE_2D, frontTextureId);
-    drawSquare(skyBoxSize);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glPopMatrix();
-    
-//    right
-    glPushMatrix();
-    glRotatef(-90, 0.0, 1.0, 0.0);
-    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
-    glBindTexture(GL_TEXTURE_2D, rightTextureId);
-    drawSquare(50.0f);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glPopMatrix();
-    
-//    left
-    glPushMatrix();
-    glRotatef(90, 0.0, 1.0, 0.0);
-    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
-    glBindTexture(GL_TEXTURE_2D, leftTextureId);
-    drawSquare(skyBoxSize);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glPopMatrix();
-    
-//    back
-    glPushMatrix();
-//    glRotatef(90, 0.0, 1.0, 0.0);
-    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2); // to left half, up full, front half
-    glBindTexture(GL_TEXTURE_2D, backTextureId);
-    drawSquare(skyBoxSize);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glPopMatrix();
-    
-//
-//    glTranslatef(0.0f, 50.0f, 50.0f);
-//    glBindTexture(GL_TEXTURE_2D, backTextureId);
-//    drawSquare(50.0f);
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//    glPopMatrix();
-//
-//    glTranslatef(0.0f, 50.0f, -50.0f);
-//    glBindTexture(GL_TEXTURE_2D, frontTextureId);
-//    drawSquare(50.0f);
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//    glPopMatrix();
-    
+
     glColor3f(1.0, 1.0, 1.0);
 
     glPopMatrix();
@@ -465,7 +436,7 @@ void reshape(GLsizei w, GLsizei h) {
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGBA);
-    glutInitWindowSize(1000, 1000);
+    glutInitWindowSize(2000, 2000);
     glutInitWindowPosition(150, 150);
     glutCreateWindow("Project output");
     glutDisplayFunc(display);
