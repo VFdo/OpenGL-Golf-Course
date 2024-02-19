@@ -1,17 +1,14 @@
 //
 //  golf_cart.hpp
-//  2d_house
+//  Golf_Course
 //
 //  Created by Vidu Fernando on 2024-02-17.
 //
 
-//#ifndef golf_cart_hpp
-//#define golf_cart_hpp
 #define GL_SILENCE_DEPRECATION
 #include <stdio.h>
 #include <GLUT/glut.h>
 #include <math.h>
-//#endif /* golf_cart_hpp */
 
 GLfloat cartBody[] = {0.4, 0.6, 0.8, 1.0};
 GLfloat cartFloor[] = {0.8, 0.8, 0.8, 1.0};

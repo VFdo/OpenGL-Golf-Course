@@ -1,6 +1,6 @@
 //
 //  golf_project_final.cpp
-//  2d_house
+//  Golf_Course
 //
 //  Created by Vidu Fernando on 2024-02-16.
 //
@@ -29,10 +29,19 @@ float sceR = 0;
 float camX = 0;
 float camY = 2;
 float camZ = 5;
+float cartX = -60.0f;
+float cartZ = 0.0f;
+float cartR = 0.0f;
+bool animateBall = false;
+float ballX = 2.0f;
+float ballY = 1.0f;
+float ballZ = 1.0f;
+float ballHeight = 10.0f;
+float ballSpeed = 1.0f;
 
 int animationFactor = 0;
 
-GLfloat skyBoxSize = 50.f;
+GLfloat skyBoxSize = 150;
 
 GLfloat ballTextureId;
 GLfloat sandTextureId;
@@ -43,10 +52,10 @@ GLfloat leftTextureId;
 GLfloat rightTextureId;
 GLfloat backTextureId;
 GLfloat frontTextureId;
-//GLfloat checkeredTextureId;
+GLfloat upTextureId;
+GLfloat downTextureId;
 
-
-#define IMAGE_ROWS 64      // Texture image rows and columns
+#define IMAGE_ROWS 64
 #define IMAGE_COLS 64
 
 GLubyte imageData[IMAGE_ROWS][IMAGE_COLS][3];
@@ -58,7 +67,7 @@ float height;
 
 void loadGrassTexture(){
     grassTextureId = SOIL_load_OGL_texture(
-        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture.jpg",  // Replace with the path to your texture file
+        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture.jpg",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -70,8 +79,7 @@ void loadGrassTexture(){
 }
 
 void loadGrassTexture2(){
-    grassTexture2Id = SOIL_load_OGL_texture(
-                                           "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture2.jpeg",
+    grassTexture2Id = SOIL_load_OGL_texture("/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture2.jpeg",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -83,8 +91,7 @@ void loadGrassTexture2(){
 }
 
 void loadGrassTexture3(){
-    grassTexture3Id = SOIL_load_OGL_texture(
-                                           "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture3.jpg",
+    grassTexture3Id = SOIL_load_OGL_texture("/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/grass_texture3.jpg",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -110,7 +117,7 @@ void loadBallTexture() {
 
 void loadSandTexture(){
     sandTextureId = SOIL_load_OGL_texture(
-        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/sand_texture.jpg",  // Replace with the path to your texture file
+        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/sand_texture.jpg",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -123,7 +130,7 @@ void loadSandTexture(){
 
 void loadTextureLeft(){
     leftTextureId = SOIL_load_OGL_texture(
-        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/left.png",  // Replace with the path to your texture file
+        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/left.png",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -136,7 +143,7 @@ void loadTextureLeft(){
 
 void loadTextureRight(){
     rightTextureId = SOIL_load_OGL_texture(
-        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/right.png",  // Replace with the path to your texture file
+        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/right.png",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -149,7 +156,7 @@ void loadTextureRight(){
 
 void loadTextureBack(){
     backTextureId = SOIL_load_OGL_texture(
-        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/back.png",  // Replace with the path to your texture file
+        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/back.png",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -162,7 +169,7 @@ void loadTextureBack(){
 
 void loadTextureFront(){
     frontTextureId = SOIL_load_OGL_texture(
-        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/front.png",  // Replace with the path to your texture file
+        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/front.png",
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
@@ -172,32 +179,51 @@ void loadTextureFront(){
         printf("Front texture loading failed: %s\n", SOIL_last_result());
     }
 }
-//void loadTextureDataFromImage() {
-//    image = SOIL_load_image("gizapyamid_texture.jpg", &width, &height, 0, SOIL_LOAD_RGB);
-//
-//    if (image == NULL) {
-//        printf("Error : %s", SOIL_last_result());
-//    }
-//}
-//
-//void loadTextures() {
-//    loadTextureImageData();   // Load pattern into image data array
-//    glGenTextures(1, &textureID);
-//    glBindTexture(GL_TEXTURE_2D, textureID);
-//    glTexImage2D(GL_TEXTURE_2D, 0, 3, IMAGE_COLS, IMAGE_ROWS, 0, GL_RGB,
-//        GL_UNSIGNED_BYTE, imageData);  // Create texture from image data
-//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-//}
+
+void loadTextureUp(){
+    upTextureId = SOIL_load_OGL_texture(
+        "/Users/vidufernando/Documents/me/Y3/CS308/graphics_lab/project/up.png",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+    );
+
+    if (!upTextureId) {
+        printf("Front texture loading failed: %s\n", SOIL_last_result());
+    }
+}
+
+void setLighting() {
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    
+    GLfloat ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+
+    GLfloat L0pos[] = { 0, 5, 5, 1.0 };
+    glLightfv(GL_LIGHT0, GL_POSITION, L0pos);
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
+
+    GLfloat L1pos[] = { 0, 5, -15, 0.0 };
+    glLightfv(GL_LIGHT1, GL_POSITION, L1pos);
+}
 
 void init() {
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    glClearColor(0.34f, 0.79f, 0.9f, 1.0f);
     glClearDepth(1.0);
-//    glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
-//    loadTexture();
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glShadeModel(GL_SMOOTH);
+
     loadBallTexture();
     loadSandTexture();
     loadGrassTexture();
@@ -207,6 +233,8 @@ void init() {
     loadTextureRight();
     loadTextureBack();
     loadTextureFront();
+    loadTextureUp();
+    setLighting();
 }
 
 void drawAxes() {
@@ -242,16 +270,28 @@ void drawGrid() {
     glEnd();
 }
 
-//void drawSquare(float size) {
-//    glEnable(GL_TEXTURE_2D);
-//    glBegin(GL_POLYGON);
-//    glTexCoord2d(1.0, 1.0);glVertex3d(0.0, 0.0, 0.0);
-//    glTexCoord2d(0.0, 1.0);glVertex3d(size, 0.0, 0.0);
-//    glTexCoord2d(0.0, 0.0);glVertex3d(size, -size, 0.0);
-//    glTexCoord2d(1.0, 0.0);glVertex3d(0.0, -size, 0.0);
-//    glEnd();
-//    glDisable(GL_TEXTURE_2D);
-//}
+void updateBallPosition() {
+    if (animateBall) {
+        ballY = ballHeight * sin(ballX);
+        ballX += ballSpeed;
+        
+        if (ballX >= M_PI) {
+            animateBall = false;
+            ballY = 0.0f;
+            ballX = 70.0f;
+            ballZ = 58.0f;
+        }
+    }
+}
+
+void drawStickBody(){
+    glBegin(GL_POLYGON);
+    glVertex2f(0.0f, 0.0f);
+    glVertex2f(2.0f, 0.0f);
+    glVertex2f(3.0f, 1.0f);
+    glVertex2f(1.0f, 1.0f);
+    glEnd();
+}
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -261,128 +301,200 @@ void display() {
     
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
-//    camera orientation (eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
     gluLookAt(0.0 + camX, 0.0 + camY, 0.0 + camZ, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-//  move the whole scene
     glTranslatef(sceX, sceY, sceZ);
     glRotatef(sceR*5, 0.0, 1.0, 0.0);
     
     
 //    ************ SKYBOX ************
-//// front
-//    glPushMatrix();
-//    glTranslatef(skyBoxSize/2, skyBoxSize, -skyBoxSize/2); // to left half, up full, back full
-//    glRotatef(-180, 0.0, 1.0, 0.0);
-//    glBindTexture(GL_TEXTURE_2D, frontTextureId);
-//    drawSquare(skyBoxSize);
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//    glPopMatrix();
-//
+    glPushMatrix();
+    glTranslated(0.0, 0.0, 40.0);
+// front
+    glPushMatrix();
+    glTranslatef(skyBoxSize/2, skyBoxSize, -skyBoxSize/2);
+    glRotatef(-180, 0.0, 1.0, 0.0);
+    glBindTexture(GL_TEXTURE_2D, frontTextureId);
+    drawSquare(skyBoxSize);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
+
 ////    right
+    glPushMatrix();
+    glRotatef(-90, 0.0, 1.0, 0.0);
+    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
+    glBindTexture(GL_TEXTURE_2D, rightTextureId);
+    drawSquare(skyBoxSize);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
+
+//    left
+    glPushMatrix();
+    glRotatef(90, 0.0, 1.0, 0.0);
+    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
+    glBindTexture(GL_TEXTURE_2D, leftTextureId);
+    drawSquare(skyBoxSize);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
+
+//    back
+    glPushMatrix();
+    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
+    glBindTexture(GL_TEXTURE_2D, backTextureId);
+    drawSquare(skyBoxSize);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
+    
+//    up
+    glPushMatrix();
+    glRotatef(90, 1.0, 0.0, 0.0);
+    glTranslatef(-skyBoxSize/2, skyBoxSize/2, -skyBoxSize);
+    glBindTexture(GL_TEXTURE_2D, upTextureId);
+    drawSquareUp(skyBoxSize);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
+    
+////    down
 //    glPushMatrix();
-//    glRotatef(-90, 0.0, 1.0, 0.0);
-//    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
-//    glBindTexture(GL_TEXTURE_2D, rightTextureId);
-//    drawSquare(skyBoxSize);
+//    glRotatef(90, 1.0, 0.0, 0.0);
+//    glTranslatef(-skyBoxSize/2, skyBoxSize/2, skyBoxSize);
+//    glBindTexture(GL_TEXTURE_2D, upTextureId);
+//    drawSquareUp(skyBoxSize);
 //    glBindTexture(GL_TEXTURE_2D, 0);
 //    glPopMatrix();
-//
-////    left
-//    glPushMatrix();
-//    glRotatef(90, 0.0, 1.0, 0.0);
-//    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2);
-//    glBindTexture(GL_TEXTURE_2D, leftTextureId);
-//    drawSquare(skyBoxSize);
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//    glPopMatrix();
-//
-////    back
-//    glPushMatrix();
-////    glRotatef(90, 0.0, 1.0, 0.0);
-//    glTranslatef(-skyBoxSize/2, skyBoxSize, skyBoxSize/2); // to left half, up full, front half
-//    glBindTexture(GL_TEXTURE_2D, backTextureId);
-//    drawSquare(skyBoxSize);
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//    glPopMatrix();
-//
+    
+    glPopMatrix();
+
 //    ***********************************
+    
+//    grass path box
+    glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_AMBIENT, grass);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, grass);
+    glMaterialf(GL_FRONT, GL_SHININESS, 50);
+    
+    glRotatef(90, 1.0, 0.0, 0.0);
+    glTranslated(-80.0f, 120.0f, 0.3f);
+    glBindTexture(GL_TEXTURE_2D, grassTexture3Id);
+    drawSquare(200);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
     
 //    dark grass patch 1
     glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_AMBIENT, grass);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, grass);
+    glMaterialf(GL_FRONT, GL_SHININESS, 50);
+
     glBindTexture(GL_TEXTURE_2D, grassTexture2Id);
     drawOval(50, 85, 65);
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
-    
+
 //    dark grass patch 2
     glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_AMBIENT, grass);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, grass);
+    glMaterialf(GL_FRONT, GL_SHININESS, 50);
+
     glBindTexture(GL_TEXTURE_2D, grassTexture2Id);
     glTranslatef(65.0f, 0.0f, 60.0f);
     drawOval(50, 60, 50);
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
-    
+
 //    light grass patch 1
     glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_AMBIENT, grassLight);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, grassLight);
+    glMaterialf(GL_FRONT, GL_SHININESS, 5);
+
     glBindTexture(GL_TEXTURE_2D, grassTextureId);
     glTranslatef(15.0f, 0.1f, -10.0f);
     drawOval(30, 60.0f, 50.0f);
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
-    
+
 //    light grass patch 2
     glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_AMBIENT, grassLight);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, grassLight);
+    glMaterialf(GL_FRONT, GL_SHININESS, 5);
+
     glBindTexture(GL_TEXTURE_2D, grassTextureId);
     glTranslatef(70.0f, 0.1f, 55.0f);
     drawOval(30, 50.0f, 40.0f);
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
-    
-//    TODO: different texture? or tree?
-//    glPushMatrix();
-//    glBindTexture(GL_TEXTURE_2D, sandTextureId);
-//    glTranslatef(-60.0f, 0.1f, 0.0f);
-//    drawOval(15, 10, 12);
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//    glPopMatrix();
-    
+
 //    sand patch
     glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_AMBIENT, sand);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, cartDiffiuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, sand);
+    glMaterialf(GL_FRONT, GL_SHININESS, 10);
+
     glBindTexture(GL_TEXTURE_2D, sandTextureId);
     glTranslatef(40.0f, 0.2f, -40.0f);
     drawOval(15, 11, 4);
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
-    
+
 //    flag
     glPushMatrix();
     glTranslatef(70.0f, 16.0f, 58.0f);
     glScalef(5.0f, 5.0f, 5.0f);
     drawFlag();
     glPopMatrix();
-    
+
 //    golf cart
     glPushMatrix();
-    glTranslatef(-60.0f, 4.0f, 0.0f);
+    glTranslatef(cartX, 4.0f, cartZ);
+    glRotatef(cartR*5, 0.0, 1.0, 0.0);
     glScalef(0.8f, 0.8f, 0.8f);
     drawCart(8);
     glPopMatrix();
-    
+
 //    golf ball
     glPushMatrix();
-    glTranslatef(0.0f, 1.0f, 0.0f);
+//    glTranslatef(2.0f, 1.0f, 1.0f);
+    glTranslatef(ballX, ballY, ballZ);
     glBindTexture(GL_TEXTURE_2D, ballTextureId);
     drawBall(1.0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
-    
 
-    glColor3f(1.0, 1.0, 1.0);
+//    golf stick
+    GLfloat stickBody[] = {0.22, 0.23, 0.27, 1.0};
+    GLfloat stick[] = {0.53, 0.54, 0.54, 1.0};
+    GLfloat stickDiffuse[] = {0.2, 0.2, 0.2, 1.0};
+
+    glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_AMBIENT, stickBody);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, stickDiffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, stickBody);
+    glMaterialf(GL_FRONT, GL_SHININESS, 200);
+
+    glColor3f(0.22, 0.23, 0.27);
+    drawStickBody();
+    glTranslatef(2.5, 10.0f, -0.2);
+    glRotatef(90, 1.0, 0.0, 0.0);
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT, stick);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, stickDiffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, stick);
+    glMaterialf(GL_FRONT, GL_SHININESS, 200);
+    glColor3f(0.53, 0.54, 0.54);
+    drawCylinder(10.0f, 0.3f);
+    glPopMatrix();
 
     glPopMatrix();
     glutSwapBuffers();
     animationFactor += 5;
-    
 }
 
 void keyboardSpecial(int key, int x, int y) {
@@ -414,12 +526,33 @@ void keyboard(unsigned char key, int x, int y) {
         sceR++;
     if (key == 'R')
         sceR--;
+    
+    if (key == 'w')
+        cartX++;
+    if (key == 's')
+        cartX--;
+    if (key == 'a')
+        cartR++;
+    if (key == 'd')
+        cartR--;
+    if(key == 'q'){
+        cartX = -60;
+        cartR = 0;
+        ballX = 2.0f;
+        ballY = 1.0f;
+        ballZ =1.0f;
+    }
+    if (key == 'p') {
+            animateBall = true;
+        }
+    
     glutPostRedisplay();
 }
 
 void Timer(int x) {
+    updateBallPosition();
     glutPostRedisplay();
-    glutTimerFunc(60, Timer, 1);
+    glutTimerFunc(60, Timer, 0);
 }
 
 void reshape(GLsizei w, GLsizei h) {
@@ -429,9 +562,10 @@ void reshape(GLsizei w, GLsizei h) {
     glLoadIdentity();
 //    define the perspective projection frustum
 //    (FOV_in_vertical, aspect_ratio, z-distance to the near plane from the camera position, z-distance to far plane from the camera position)
-    gluPerspective(120.0, aspect_ratio, 1.0, 100.0);
+    gluPerspective(120.0, aspect_ratio, 1.0, 700.0);
 
 }
+
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
